@@ -1,0 +1,64 @@
+#!/bin/bash
+
+function usage {
+
+	echo
+	echo "position - Position specific app windows for place and size."
+	echo
+	echo "Syntax: position <environment>"
+	echo
+	echo "$ position work - position for dual monitor work desktop (3520x1200)"
+	echo
+	echo "$ position single - position for single, external monitor (1600x1200)"
+	echo	
+	echo "$ position laptop - position for small laptop screen (1600x800)"
+	echo
+
+}
+
+ENVIRON=${1:-"null"}
+
+if [[ $ENVIRON == "null" ]]
+then
+	usage
+	exit 1
+
+else
+
+	case $ENVIRON in
+
+		"work" )
+
+			# Evolution Mail
+			wmctrl -r Evolution -e 0,718,30,1200,1020
+
+			# Pidgin chat & buddy
+			wmctrl -r "*status" -e 0,2797,30,723,1160
+			wmctrl -r "#devops" -e 0,2797,30,723,1160
+			wmctrl -r "Social_Devops" -e 0,2797,30,723,1160
+
+			wmctrl -r "Buddy List" -e 0,3288,0,228,794
+			;;
+		
+		"single" )
+
+			# Evolution Mail
+			wmctrl -r Evolution -e 0,400,60,1200,1020
+
+			# Pidgin chat & buddy
+			wmctrl -r "*status" -e 0,877,33,723,1160
+			wmctrl -r "#devops" -e 0,877,33,723,1160
+			wmctrl -r "Social_Devops" -e 0,877,33,723,1160
+			wmctrl -r "Buddy List" -e 0,3288,33,228,794
+			;;
+
+		"laptop" )
+			echo "Nothing configured yet"
+			;;
+
+		*)
+			usage
+			exit 1;;
+	esac
+
+fi
