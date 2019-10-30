@@ -1,64 +1,135 @@
 #!/bin/bash
 
+#
+# position
+#
+# Position windows on a Linux system using 'wmctrl' so that common apps that
+# should be in consistent places (password manager, email, Slack, etc) are
+# automatically moved there with one launch of this script.
+#
+# Ideal use: when switching from desktop to laptop, laptop to desktop mode,
+# windows may be randomly re-positioned.  This brings order to the display.
+# 
+# 2019-10-29 maxcode@maxwellspangler.com
+
+function available_display_configs {
+  # 
+  if [[ -r $CONFIG_FILE ]]
+  then
+    echo "Available monitor configurations:"
+    echo
+    grep '^monitor-config:' $CONFIG_FILE
+  fi
+}
+
 function usage {
 
 	echo
-	echo "position - Position specific app windows for place and size."
+	echo "position - Automatically position windows based on config files"
 	echo
-	echo "Syntax: position <environment>"
-	echo
-	echo "$ position work - position for dual monitor work desktop (3520x1200)"
-	echo
-	echo "$ position single - position for single, external monitor (1600x1200)"
-	echo	
-	echo "$ position laptop - position for small laptop screen (1600x800)"
-	echo
-
+  echo "No parameters required. If the configuration of your displays"
+  echo "is recognized and there are rules for that display config, it"
+  echo "will reposition windows using those rules."
+  echo
+  available_display_configs
 }
 
-ENVIRON=${1:-"null"}
+function get_resolution {
 
-if [[ $ENVIRON == "null" ]]
+  RESOLUTION=$(xdpyinfo | grep dimensions | awk '{print $2}')
+  echo "Resolution: $RESOLUTION"
+
+  DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | grep $RESOLUTION| wc -l)
+
+  if [[ $DISPLAY_LINE_COUNT -gt 0 ]]
+  then
+    DISPLAY_LINE=$(grep '^monitor-config:' $CONFIG_FILE | grep $RESOLUTION)
+    echo "Monitor config is |$DISPLAY_LINE|"
+
+    POSITION_RULE=$(echo $DISPLAY_LINE | awk '{print $2}')
+    echo "Position rule is |$POSITION_RULE|"
+
+  else
+    echo "Error: Can't find a monitor-config line in $CONFIG_FILE for resolution $RESOLUTION"
+    available_display_configs
+    exit 1
+  fi
+}
+
+function check_for_window_rules {
+
+  POSITION_COUNT=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | wc -l)
+
+  if [[ $POSITION_COUNT -gt 0 ]]
+  then
+    echo "Found position rules to apply"
+  else
+    echo "Error: No position rules to apply for |$POSITION_RULE|."
+    exit 1
+  fi
+}
+
+function position_windows {
+
+  POSITION_LINES=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:')
+
+  echo "$POSITION_LINES" | while read LINE
+  do
+    POS_COMMAND=$(echo $LINE | awk -F '"' '{print $2}')
+
+    echo "Eval wmctrl -r $POS_COMMAND"
+    eval wmctrl -r $POS_COMMAND
+  done
+}
+
+#
+# Main code
+#
+
+# Required
+CONFIG_FILE=~/.position-config
+
+# Global variable
+RESOLUTION=""
+DISPLAY_LINE=""
+
+# Only used to catch if user wants help, offer this before any real work
+PARAM=${1:-"null"}
+
+if [[ $PARAM == "help" || $PARAM == "usage" || $PARAM == "-h" || $PARAM == "--help" || $PARAM == "-help" ]]
 then
 	usage
-	exit 1
-
-else
-
-	case $ENVIRON in
-
-		"work" )
-
-			# Evolution Mail
-			wmctrl -r Evolution -e 0,718,30,1200,1020
-
-			# Pidgin chat & buddy
-			wmctrl -r "*status" -e 0,2797,30,723,1160
-			wmctrl -r "#devops" -e 0,2797,30,723,1160
-			wmctrl -r "Social_Devops" -e 0,2797,30,723,1160
-
-			wmctrl -r "Buddy List" -e 0,3288,0,228,794
-			;;
-		
-		"single" )
-
-			# Evolution Mail
-			wmctrl -r Evolution -e 0,400,60,1200,1020
-
-			# Pidgin chat & buddy
-			wmctrl -r "*status" -e 0,877,33,723,1160
-			wmctrl -r "#devops" -e 0,877,33,723,1160
-			wmctrl -r "Social_Devops" -e 0,877,33,723,1160
-			wmctrl -r "Buddy List" -e 0,3288,33,228,794
-			;;
-
-		"laptop" )
-			echo "Nothing configured yet"
-			;;
-
-		*)
-			usage
-			exit 1;;
-	esac
-
+	exit 0
 fi
+
+# We require a config file, so check for that and bail out if not available
+if [[ ! -r $CONFIG_FILE ]]
+then
+  if [[ ! -f $CONFIG_FILE ]]
+  then
+    echo "Error: Config file $CONFIG_FILE does not exist."
+  else
+    echo "Error: Config file $CONFIG_FILE is not readable."
+  fi
+  exit 1
+fi
+
+# Check for our one dependency 'wmctrl'
+WMLOC=$(whereis wmctrl | awk '{print $2}')
+if [[ $WMLOC == "" ]]
+then
+  echo -n "whereis "
+  whereis wmctrl
+  echo "Error: I can't find 'wmctrl' used to reposition windows."
+  echo "Please install this before using this program."
+  exit 1
+fi
+
+# Identify the monitor configuration via the whole desktop resolution
+get_resolution
+
+# Do we have rules to position windows for this display configuration?
+check_for_window_rules
+
+# If we do, position the windows
+position_windows
