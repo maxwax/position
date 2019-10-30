@@ -1,0 +1,3 @@
+# Ignore local script to allow deployment of this git repo's 
+# code to a local system
+deploy
