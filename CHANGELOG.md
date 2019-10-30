@@ -2,6 +2,10 @@
 
 ### 2019-10-29
 
+* Modified Gnome work.desktop shortcut file to call this script at /usr/local/bin/position instead of /home/maxwell/bin/position.
+
+### 2019-10-29
+
 * Rewrote the script to separate code & data using a configuration file.
 
 The configuration file now defines monitor configurations which are recognized and associated with a rule-group name.  The script then calls wmctrl using the parameters provided by any positioning rule with that resolution's rule-group name.
