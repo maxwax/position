@@ -2,6 +2,10 @@
 
 ### 2019-10-29
 
+* Added rules to the position-config file so that my Slack and KeePassX applications are always visible on the screen regardless of the virtual desktop that is currently displayed.
+
+### 2019-10-29
+
 * Modified Gnome work.desktop shortcut file to call this script at /usr/local/bin/position instead of /home/maxwell/bin/position.
 
 ### 2019-10-29
