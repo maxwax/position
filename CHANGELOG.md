@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 2019-12-24
+
+* Adding install script so this can be downloaded from Github via Chef and deployed. Should make an rpm, but too little time for that right now.
+
 ### 2019-10-29
 
 * Added rules to the position-config file so that my Slack and KeePassX applications are always visible on the screen regardless of the virtual desktop that is currently displayed.
