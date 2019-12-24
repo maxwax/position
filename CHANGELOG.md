@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.1.0
+
+* Switching version numbering
+* Now deploys with install script; Deploys position script and work.desktop Gnome shortcut
+
 ### 2019-12-24
 
 * Adding install script so this can be downloaded from Github via Chef and deployed. Should make an rpm, but too little time for that right now.
