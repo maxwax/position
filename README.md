@@ -11,11 +11,11 @@ I normally call this script using a Gnome Shell .desktop file which enables me t
 
 * Bash
 * wmctrl
-* Configuration file: $HOME/.position-config 
+* Configuration file: $HOME/.position.conf
 
 ## Configuration
 
-Create a text file at $HOME/.position-config
+Create a text file at $HOME/.position.conf
 
 Identify the resolution of your whole (single or multiple monitor) desktop. You can use 'xrandr' for this.
 
@@ -46,7 +46,7 @@ The double-quoted portion identifies the name of an application's window and adj
 
 You can run this from the command line:
 
-```./position 
+```./position
 Resolution: 3120x1920
 Monitor config is |monitor-config: display-home-office: "3120x1920"|
 Position rule is |display-home-office:|

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v1.0.0
+
+* Rename config file as .position.conf from .position-config for consistency with other scripts I've written.
+
 ### v0.1.0
 
 * Switching version numbering

@@ -9,11 +9,11 @@
 #
 # Ideal use: when switching from desktop to laptop, laptop to desktop mode,
 # windows may be randomly re-positioned.  This brings order to the display.
-# 
+#
 # 2019-10-29 maxcode@maxwellspangler.com
 
 function available_display_configs {
-  # 
+  #
   if [[ -r $CONFIG_FILE ]]
   then
     echo "Available monitor configurations:"
@@ -87,7 +87,7 @@ function position_windows {
 #
 
 # Required
-CONFIG_FILE=~/.position-config
+CONFIG_FILE=~/.position.conf
 
 # Global variable
 RESOLUTION=""
