@@ -12,6 +12,9 @@
 #
 # 2019-10-29 maxcode@maxwellspangler.com
 
+VERSION="1.1.0"
+VERSION_DATE="2020-01-10"
+
 function available_display_configs {
   #
   if [[ -r $CONFIG_FILE ]]
@@ -25,7 +28,7 @@ function available_display_configs {
 function usage {
 
 	echo
-	echo "position - Automatically position windows based on config files"
+	echo "position  $VERSION  $VERSION_DATE"
 	echo
   echo "No parameters required. If the configuration of your displays"
   echo "is recognized and there are rules for that display config, it"

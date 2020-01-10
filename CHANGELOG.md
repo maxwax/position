@@ -1,6 +1,10 @@
 # CHANGELOG
 
-### v1.0.0
+### v1.1.0
+
+* Added VERSION and VERSION_DATE variables to script.
+
+### v1.1.0
 
 * Rename config file as .position.conf from .position-config for consistency with other scripts I've written.
 
