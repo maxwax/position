@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Position Work Windows
-Comment=Use the command line [maxdesktop]
-Keywords=shell;prompt;command;commandline;work
+Comment=Execute position script to position windows using rules
+Keywords=shell;prompt;command;commandline;position;work
 TryExec=gnome-terminal
 Exec=/usr/local/bin/position
 Icon=utilities-terminal
