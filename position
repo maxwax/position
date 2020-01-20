@@ -12,8 +12,8 @@
 #
 # 2019-10-29 maxcode@maxwellspangler.com
 
-VERSION="1.1.0"
-VERSION_DATE="2020-01-10"
+VERSION="1.1.1"
+VERSION_DATE="2020-01-20"
 
 function available_display_configs {
   #
@@ -61,7 +61,7 @@ function get_resolution {
 
 function check_for_window_rules {
 
-  POSITION_COUNT=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | wc -l)
+  POSITION_COUNT=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | egrep -v "^#" | wc -l)
 
   if [[ $POSITION_COUNT -gt 0 ]]
   then
@@ -74,7 +74,7 @@ function check_for_window_rules {
 
 function position_windows {
 
-  POSITION_LINES=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:')
+  POSITION_LINES=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | egrep -v "^#")
 
   echo "$POSITION_LINES" | while read LINE
   do

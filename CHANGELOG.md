@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v1.1.1
+
+* Ignore commented out rules when positioning windows.
+
 ### v1.1.0
 
 * Added VERSION and VERSION_DATE variables to script.
