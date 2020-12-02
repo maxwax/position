@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v1.2.0
+
+* Modified the position script so if the user provides a parameter, it will skip the resolution handling and just apply rules named by the parameter.
+* Updated my included (sample) position.conf file with some special-rule-id items for cloud computing study work.
+
 ### v1.1.1
 
 * Ignore commented out rules when positioning windows.

@@ -12,8 +12,8 @@
 #
 # 2019-10-29 maxcode@maxwellspangler.com
 
-VERSION="1.1.1"
-VERSION_DATE="2020-01-20"
+VERSION="1.2.0"
+VERSION_DATE="2020-12-01"
 
 function available_display_configs {
   #
@@ -28,11 +28,13 @@ function available_display_configs {
 function usage {
 
 	echo
-	echo "position  $VERSION  $VERSION_DATE"
+	echo "position [special-rule-id] $VERSION  $VERSION_DATE"
 	echo
-  echo "No parameters required. If the configuration of your displays"
-  echo "is recognized and there are rules for that display config, it"
-  echo "will reposition windows using those rules."
+  echo "With no parameters, it will use your monitor resolution to"
+  echo "find window positioning rules in $HOME/.position.conf and apply them."
+  echo
+  echo "With a special-rule-id parameter, it will look for those rules"
+  echo "in the config file and apply them."
   echo
   available_display_configs
 }
@@ -103,6 +105,8 @@ if [[ $PARAM == "help" || $PARAM == "usage" || $PARAM == "-h" || $PARAM == "--he
 then
 	usage
 	exit 0
+else
+  echo "Using special config |$PARAM|"
 fi
 
 # We require a config file, so check for that and bail out if not available
@@ -128,8 +132,15 @@ then
   exit 1
 fi
 
-# Identify the monitor configuration via the whole desktop resolution
-get_resolution
+if [[ ! -z $PARAM ]]
+then
+  # User provided a parameter, so we'll apply any rules with the parameter name
+  POSITION_RULE="$PARAM"
+else
+  # User did not provide a parameter,
+  # Identify the monitor configuration via the whole desktop resolution
+  get_resolution
+fi
 
 # Do we have rules to position windows for this display configuration?
 check_for_window_rules
