@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v1.2.1
+
+* Bug fix: If there is no CLI parameter, apply rules based on resolution. Recent work to enable allowing a special-rules-id CLI parameter allowed that new feature but broke the existing, default behavior.  Now tested for both.
+
 ### v1.2.0
 
 * Modified the position script so if the user provides a parameter, it will skip the resolution handling and just apply rules named by the parameter.

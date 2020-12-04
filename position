@@ -99,14 +99,20 @@ RESOLUTION=""
 DISPLAY_LINE=""
 
 # Only used to catch if user wants help, offer this before any real work
-PARAM=${1:-"null"}
+PARAM=${1:-"_null"}
 
 if [[ $PARAM == "help" || $PARAM == "usage" || $PARAM == "-h" || $PARAM == "--help" || $PARAM == "-help" ]]
 then
 	usage
 	exit 0
 else
-  echo "Using special config |$PARAM|"
+  if [[ $PARAM != "_null" ]]
+  then
+    echo "Using special config |$PARAM|"
+  else
+    echo "Using default resolution based window placement."
+    PARAM=""
+  fi
 fi
 
 # We require a config file, so check for that and bail out if not available
