@@ -19,6 +19,10 @@ $ position
 
 monitor-config: display-work-office: "3840x1200"
 
+# When no exact H x V resolution is found, the system will look for a
+# special type rule to match on horizontal resolution Only
+monitor-config: display-home-office: "4320x9999"
+
 points to:
 
 display-work-office: "'Evolution' -e 0,535,0,1385,1020"

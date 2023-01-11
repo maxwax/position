@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v1.3.0
+
+* When a monitor-config rule matching the current display's horizontalXvertical resolution cannot be found, recheck for a rule that matchtes the horizontal with a vertical resolution of 'x9999'.  This allows the script to find a monitor-config rule based on a unique two or three monitor horizontal resolution.  Without this the OS may sometimes adjust the reported vertical resolution in response to ?? display position changes ?? and break exact horizontal x vertical monitor-config rules.
+
 ### v1.2.1
 
 * Bug fix: If there is no CLI parameter, apply rules based on resolution. Recent work to enable allowing a special-rules-id CLI parameter allowed that new feature but broke the existing, default behavior.  Now tested for both.

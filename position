@@ -12,8 +12,8 @@
 #
 # 2019-10-29 maxcode@maxwellspangler.com
 
-VERSION="1.2.0"
-VERSION_DATE="2020-12-01"
+VERSION="1.3.0"
+VERSION_DATE="2023-01-10"
 
 function available_display_configs {
   #
@@ -42,18 +42,55 @@ function usage {
 function get_resolution {
 
   RESOLUTION=$(xdpyinfo | grep dimensions | awk '{print $2}')
-  echo "Resolution: $RESOLUTION"
 
-  DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | grep $RESOLUTION| wc -l)
+  # Remove vertical resolution 'x1200'
+  HORIZONTAL_RESOLUTION=${RESOLUTION%x*}
+
+  if [[ ! -z $DEBUG ]]
+  then
+    echo "Resolution: $RESOLUTION, Horizontal Resolution $HORIZONTAL_RESOLUTION"
+  fi
+}
+
+function scan_for_monitor_config {
+  # $1 is an exact horizontal x vertical resolution or horizontal x 9999 string
+
+  DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1}| wc -l)
 
   if [[ $DISPLAY_LINE_COUNT -gt 0 ]]
   then
-    DISPLAY_LINE=$(grep '^monitor-config:' $CONFIG_FILE | grep $RESOLUTION)
-    echo "Monitor config is |$DISPLAY_LINE|"
+    DISPLAY_LINE=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1})
+    if [[ ! -z $DEBUG ]]
+    then
+      echo "Monitor config is |$DISPLAY_LINE|"
+    fi
 
     POSITION_RULE=$(echo $DISPLAY_LINE | awk '{print $2}')
-    echo "Position rule is |$POSITION_RULE|"
+    if [[ ! -z $DEBUG ]]
+    then
+      echo "Position rule is |$POSITION_RULE|"
+    fi
+  fi
+}
 
+# Using display resolution, try to find a monitor-config line for the resolution
+function find_monitor_config {
+  POSITION_RULE=""
+  # Try getting exact horizontal x vertical resolution config
+  if [[ ! -z $DEBUG ]]
+  then
+    echo "Looking for monitor-config match horizontal x vertical resolution."
+  fi
+
+  scan_for_monitor_config $RESOLUTION
+  if [[ $POSITION_RULE == "" ]]
+  then
+    if [[ ! -z $DEBUG ]]
+    then
+      echo "Looking for monitor-config horizontal match only."
+    fi
+    # Now try getting horizontal x 9999 resolution config
+    scan_for_monitor_config "${HORIZONTAL_RESOLUTION}x9999"
   else
     echo "Error: Can't find a monitor-config line in $CONFIG_FILE for resolution $RESOLUTION"
     available_display_configs
@@ -147,6 +184,9 @@ else
   # Identify the monitor configuration via the whole desktop resolution
   get_resolution
 fi
+
+# Attempt to find a monitor-config rule in the config file for this resolution
+find_monitor_config
 
 # Do we have rules to position windows for this display configuration?
 check_for_window_rules
