@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v.1.3.1
+
+Error out if we can't find a monitor-config rule based on H x V or just H resolutions.  Fixes a case where the script just hands when a monitor-config is not found.
+
 ### v1.3.0
 
 * When a monitor-config rule matching the current display's horizontalXvertical resolution cannot be found, recheck for a rule that matchtes the horizontal with a vertical resolution of 'x9999'.  This allows the script to find a monitor-config rule based on a unique two or three monitor horizontal resolution.  Without this the OS may sometimes adjust the reported vertical resolution in response to ?? display position changes ?? and break exact horizontal x vertical monitor-config rules.

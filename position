@@ -55,6 +55,11 @@ function get_resolution {
 function scan_for_monitor_config {
   # $1 is an exact horizontal x vertical resolution or horizontal x 9999 string
 
+  if [[ ! -z $DEBUG ]]
+  then
+    echo "scan_for_monitor_config Looking for |${1}|"
+  fi
+
   DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1}| wc -l)
 
   if [[ $DISPLAY_LINE_COUNT -gt 0 ]]
@@ -79,7 +84,7 @@ function find_monitor_config {
   # Try getting exact horizontal x vertical resolution config
   if [[ ! -z $DEBUG ]]
   then
-    echo "Looking for monitor-config match horizontal x vertical resolution."
+    echo "Looking for monitor-config match horizontal x vertical resolution |$RESOLUTION|"
   fi
 
   scan_for_monitor_config $RESOLUTION
@@ -87,14 +92,18 @@ function find_monitor_config {
   then
     if [[ ! -z $DEBUG ]]
     then
-      echo "Looking for monitor-config horizontal match only."
+      echo "Looking for monitor-config horizontal match only: |${HORIZONTAL_RESOLUTION}x9999|"
     fi
+
     # Now try getting horizontal x 9999 resolution config
     scan_for_monitor_config "${HORIZONTAL_RESOLUTION}x9999"
-  else
-    echo "Error: Can't find a monitor-config line in $CONFIG_FILE for resolution $RESOLUTION"
-    available_display_configs
-    exit 1
+
+    if [[ $POSITION_RULE == "" ]]
+    then
+      echo "Error: Can't find a monitor-config line in $CONFIG_FILE for resolution $RESOLUTION"
+      available_display_configs
+      exit 1
+    fi
   fi
 }
 
