@@ -39,6 +39,13 @@ function usage {
   available_display_configs
 }
 
+function debug_text {
+  if [[ ! -z $DEBUG ]]
+  then
+    echo "$*"
+  fi
+}
+
 function get_resolution {
 
   RESOLUTION=$(xdpyinfo | grep dimensions | awk '{print $2}')
@@ -46,35 +53,23 @@ function get_resolution {
   # Remove vertical resolution 'x1200'
   HORIZONTAL_RESOLUTION=${RESOLUTION%x*}
 
-  if [[ ! -z $DEBUG ]]
-  then
-    echo "Resolution: $RESOLUTION, Horizontal Resolution $HORIZONTAL_RESOLUTION"
-  fi
+  debug_text "Resolution: $RESOLUTION, Horizontal Resolution $HORIZONTAL_RESOLUTION"
 }
 
 function scan_for_monitor_config {
   # $1 is an exact horizontal x vertical resolution or horizontal x 9999 string
 
-  if [[ ! -z $DEBUG ]]
-  then
-    echo "scan_for_monitor_config Looking for |${1}|"
-  fi
+  debug_text "scan_for_monitor_config Looking for |${1}|"
 
   DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1}| wc -l)
 
   if [[ $DISPLAY_LINE_COUNT -gt 0 ]]
   then
     DISPLAY_LINE=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1})
-    if [[ ! -z $DEBUG ]]
-    then
-      echo "Monitor config is |$DISPLAY_LINE|"
-    fi
+    debug_text "Monitor config is |$DISPLAY_LINE|"
 
     POSITION_RULE=$(echo $DISPLAY_LINE | awk '{print $2}')
-    if [[ ! -z $DEBUG ]]
-    then
-      echo "Position rule is |$POSITION_RULE|"
-    fi
+    debug_text "Position rule is |$POSITION_RULE|"
   fi
 }
 
@@ -82,18 +77,12 @@ function scan_for_monitor_config {
 function find_monitor_config {
   POSITION_RULE=""
   # Try getting exact horizontal x vertical resolution config
-  if [[ ! -z $DEBUG ]]
-  then
-    echo "Looking for monitor-config match horizontal x vertical resolution |$RESOLUTION|"
-  fi
+  debug_text "Looking for monitor-config match horizontal x vertical resolution |$RESOLUTION|"
 
   scan_for_monitor_config $RESOLUTION
   if [[ $POSITION_RULE == "" ]]
   then
-    if [[ ! -z $DEBUG ]]
-    then
-      echo "Looking for monitor-config horizontal match only: |${HORIZONTAL_RESOLUTION}x9999|"
-    fi
+    debug_text "Looking for monitor-config horizontal match only: |${HORIZONTAL_RESOLUTION}x9999|"
 
     # Now try getting horizontal x 9999 resolution config
     scan_for_monitor_config "${HORIZONTAL_RESOLUTION}x9999"
@@ -137,6 +126,8 @@ function position_windows {
 # Main code
 #
 
+DBEUG=false
+
 # Required
 CONFIG_FILE=~/.position.conf
 
@@ -144,22 +135,33 @@ CONFIG_FILE=~/.position.conf
 RESOLUTION=""
 DISPLAY_LINE=""
 
-# Only used to catch if user wants help, offer this before any real work
-PARAM=${1:-"_null"}
+# defualt to null
+PARAM="_null"
+#PARAM=${1:-"_null"}
 
-if [[ $PARAM == "help" || $PARAM == "usage" || $PARAM == "-h" || $PARAM == "--help" || $PARAM == "-help" ]]
-then
-	usage
-	exit 0
-else
-  if [[ $PARAM != "_null" ]]
-  then
-    echo "Using special config |$PARAM|"
-  else
-    echo "Using default resolution based window placement."
-    PARAM=""
-  fi
-fi
+while [ "$1" != "" ]
+do
+	case $1 in
+		-d | --debug )
+      DEBUG=true
+      debug_text "Debugging mode enabled"
+    ;;
+
+		"help" | "-h" | "--help" | "usage" )
+		  usage
+		  exit 0
+    ;;
+
+    # Any parameter not recognized as a command can be treated
+    # as the user requesting a specific position rule-group
+    *)
+      PARAM=$1
+      break
+    ;;
+
+	esac
+	shift
+done
 
 # We require a config file, so check for that and bail out if not available
 if [[ ! -r $CONFIG_FILE ]]
@@ -184,7 +186,14 @@ then
   exit 1
 fi
 
-if [[ ! -z $PARAM ]]
+if [[ $PARAM != "_null" ]]
+then
+  echo "Using rule-group |$PARAM| as requested on command line"
+else
+  echo "No rule-group specified on the CLI, will select one based on resolution"
+fi
+
+if [[ $PARAM != "_null" ]]
 then
   # User provided a parameter, so we'll apply any rules with the parameter name
   POSITION_RULE="$PARAM"
@@ -192,10 +201,11 @@ else
   # User did not provide a parameter,
   # Identify the monitor configuration via the whole desktop resolution
   get_resolution
-fi
 
-# Attempt to find a monitor-config rule in the config file for this resolution
-find_monitor_config
+  # Attempt to find a monitor-config rule in the config file for this resolution
+  # This is only required if we are finding rules by resolution not parameter
+  find_monitor_config
+fi
 
 # Do we have rules to position windows for this display configuration?
 check_for_window_rules

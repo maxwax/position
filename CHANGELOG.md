@@ -1,5 +1,16 @@
 # CHANGELOG
 
+
+### v1.4
+
+* Replace if/then blocks for debug statements with debug_text function to provide the same functionality. The code is simpler and cleaner this way.
+
+* Default DEBUG to false
+
+* Add CLI handling for command line parameters -d and -h
+
+* If we are using the resolution to find a monitor-config rule and the monitor-config rule to then find window placement rules, call find_resolution and find_monitor_config.  Otherwise, don't call either of these as we don't need them and can just use window placement rules.
+
 ### v.1.3.1
 
 Error out if we can't find a monitor-config rule based on H x V or just H resolutions.  Fixes a case where the script just hands when a monitor-config is not found.
