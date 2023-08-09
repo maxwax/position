@@ -12,8 +12,8 @@
 #
 # 2019-10-29 maxcode@maxwellspangler.com
 
-VERSION="1.3.0"
-VERSION_DATE="2023-01-10"
+VERSION="1.4.1"
+VERSION_DATE="2023-08-08"
 
 function available_display_configs {
   #
@@ -61,11 +61,11 @@ function scan_for_monitor_config {
 
   debug_text "scan_for_monitor_config Looking for |${1}|"
 
-  DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1}| wc -l)
+  DISPLAY_LINE_COUNT=$(grep '^monitor-config:' $CONFIG_FILE | grep -E -v "^#" | grep ${1}| wc -l)
 
   if [[ $DISPLAY_LINE_COUNT -gt 0 ]]
   then
-    DISPLAY_LINE=$(grep '^monitor-config:' $CONFIG_FILE | egrep -v "^#" | grep ${1})
+    DISPLAY_LINE=$(grep '^monitor-config:' $CONFIG_FILE | grep -E -v "^#" | grep ${1})
     debug_text "Monitor config is |$DISPLAY_LINE|"
 
     POSITION_RULE=$(echo $DISPLAY_LINE | awk '{print $2}')
@@ -98,7 +98,7 @@ function find_monitor_config {
 
 function check_for_window_rules {
 
-  POSITION_COUNT=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | egrep -v "^#" | wc -l)
+  POSITION_COUNT=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | grep -E -v "^#" | wc -l)
 
   if [[ $POSITION_COUNT -gt 0 ]]
   then
@@ -111,7 +111,7 @@ function check_for_window_rules {
 
 function position_windows {
 
-  POSITION_LINES=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | egrep -v "^#")
+  POSITION_LINES=$(grep $POSITION_RULE $CONFIG_FILE | grep -v 'monitor-config:' | grep -E -v "^#")
 
   echo "$POSITION_LINES" | while read LINE
   do

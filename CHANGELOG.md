@@ -1,6 +1,10 @@
 # CHANGELOG
 
 
+### v1.4.1
+
+* Update version number within script
+
 ### v1.4
 
 * Replace if/then blocks for debug statements with debug_text function to provide the same functionality. The code is simpler and cleaner this way.
